@@ -1,4 +1,4 @@
 import fast_json_pointer
 
-def stub_test():
+def test_stub():
     pass
