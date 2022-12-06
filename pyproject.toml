@@ -4,6 +4,8 @@ version = "0.1.0"
 description = "Implements RFC 6901 JSON pointers, and json-schema draft relative pointer resolution."
 authors = ["Tristan Sweeney <sweeneytri@gmail.com>"]
 license = "GNU Lesser General Public License v3.0"
+repository = "https://github.com/SlowAPI/py-json-pointer"
+documentation = "https://py-json-pointer.readthedocs.io/en/latest/"
 
 packages = [
     { include = "json-pointer", from="src" },
