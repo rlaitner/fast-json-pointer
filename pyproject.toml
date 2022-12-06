@@ -9,7 +9,7 @@ documentation = "https://py-json-pointer.readthedocs.io/en/latest/"
 readme = "README.md"
 
 packages = [
-    { include = "fast-json-pointer", from="src" },
+    { include = "fast_json_pointer", from="src" },
 ]
 
 [tool.poetry.dependencies]
@@ -20,6 +20,8 @@ black = "^22.10.0"
 isort = "^5.10.1"
 mypy = "^0.991"
 Sphinx = "^5.3.0"
+pytest = "^7.2.0"
+pytest-cov = "^4.0.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
