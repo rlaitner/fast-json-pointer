@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "json-pointer"
+name = "fast-json-pointer"
 version = "0.1.0"
 description = "Implements RFC 6901 JSON pointers, and json-schema draft relative pointer resolution."
 authors = ["Tristan Sweeney <sweeneytri@gmail.com>"]
@@ -9,7 +9,7 @@ documentation = "https://py-json-pointer.readthedocs.io/en/latest/"
 readme = "README.md"
 
 packages = [
-    { include = "json-pointer", from="src" },
+    { include = "fast-json-pointer", from="src" },
 ]
 
 [tool.poetry.dependencies]
