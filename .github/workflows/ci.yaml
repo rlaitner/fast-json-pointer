@@ -15,10 +15,10 @@ jobs:
         with:
           python-version: '3.11'
     
-      - name: Set package version
-        run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          poetry version $(git describe --tags --abbrev=0)
+      #- name: Set package version
+      #  run: |
+      #    curl -sSL https://install.python-poetry.org | python3 -
+      #    poetry version $(git describe --tags --abbrev=0)
        
       - name: Install and run tests
         run: |
