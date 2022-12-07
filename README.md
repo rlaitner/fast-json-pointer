@@ -11,7 +11,7 @@ Implements RFC 6901 JSON pointers, and json-schema draft relative pointer resolu
 ![PyPI - Wheel](https://img.shields.io/pypi/wheel/fast-json-pointer)
 ![PyPI - Implementation](https://img.shields.io/pypi/implementation/fast-json-pointer)
 ![PyPI - Downloads](https://img.shields.io/pypi/dw/fast-json-pointer)
-![PyPI - License](https://img.shields.io/pypi/l/fast-json-pointer)
+![GitHub](https://img.shields.io/github/license/slowAPI/fast-json-pointer)
 </td>
 </tr>
 <tr>
