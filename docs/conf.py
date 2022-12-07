@@ -18,7 +18,12 @@ release = _version("fast-json-pointer")
 
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx_toolbox.github',
+    'sphinx_toolbox.sidebar_links',
 ]
+
+github_username = 'slowAPI'
+github_repository = 'fast-json-pointer'
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']

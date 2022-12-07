@@ -1,5 +1,6 @@
-'''Implements low-level json pointer parsing. See `RFC 6901 Section 4 <https://www.rfc-editor.org/rfc/rfc6901#section-4>`_ for the
-specification that this parser adheres to.
+'''Implements low-level json pointer parsing. See `RFC 6901 Section 4
+<https://www.rfc-editor.org/rfc/rfc6901#section-4>`_ for the specification that this
+parser adheres to.
 '''
 
 import re
@@ -15,19 +16,16 @@ def validate(pointer: str) -> None:
     
     :raises: :exc:`.ParseException`: If json pointer is invalid.
 
-    >>> validate('')
+    >>> validate('') # empty string is fine, means "whole json object"
     >>> validate('foo') # parts must lead with '/'
     Traceback (most recent call last):
-        ...
-    fast_json_pointer.exceptions.ParseException: JSON pointers must be empty or start with '/'
-    >>> validate('/foo~') # ~ must be followed by either 0 or 1
+    fast_json_pointer.exceptions.ParseException: ...
+    >>> validate('/foo~') # ~ is the escape char, can't be solo
     Traceback (most recent call last):
-        ...
-    fast_json_pointer.exceptions.ParseException: Found invalid escape ~
+    fast_json_pointer.exceptions.ParseException: ...
     >>> validate('/~2/foo') # only ~0, ~1 are valid escapes
     Traceback (most recent call last):
-        ...
-    fast_json_pointer.exceptions.ParseException: Found invalid escape ~2
+    fast_json_pointer.exceptions.ParseException: ...
     '''
     
     if len(pointer) > 0 and not pointer.startswith("/"):

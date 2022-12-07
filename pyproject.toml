@@ -37,6 +37,12 @@ pytest-cov = "^4.0.0"
 [tool.poetry.extras]
 cli = ["typer"]
 
+[tool.poetry.group.dev.dependencies]
+sphinx-toolbox = "^3.2.0"
+
+[tool.pytest.ini_options]
+doctest_optionflags = ["NORMALIZE_WHITESPACE", "IGNORE_EXCEPTION_DETAIL"]
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
