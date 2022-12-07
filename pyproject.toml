@@ -1,12 +1,19 @@
 [tool.poetry]
 name = "fast-json-pointer"
-version = "0.0.0" # See github workflow, version tags pulled automatically from git
+version = "0.0.0" # See github workflow, version tags pulled automatically from git 
 description = "Implements RFC 6901 JSON pointers, and json-schema draft relative pointer resolution."
 authors = ["Tristan Sweeney <sweeneytri@gmail.com>"]
 license = "GNU Lesser General Public License v3.0"
 repository = "https://github.com/SlowAPI/py-json-pointer"
 documentation = "https://py-json-pointer.readthedocs.io/en/latest/"
 readme = "README.md"
+keywords = ["json", "json-pointer", "rfc", "rfc 6901"]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 
 packages = [
     { include = "fast_json_pointer", from="src" },
