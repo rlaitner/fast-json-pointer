@@ -27,7 +27,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
-
-.. _RFC 6901: https://www.rfc-editor.org/rfc/rfc6901
-.. _relative JSON pointer: https://json-schema.org/draft/2020-12/relative-json-pointer

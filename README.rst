@@ -3,6 +3,9 @@ Fast JSON Pointer
 
 .. inclusion-marker-do-not-remove
 
+.. _RFC 6901: https://www.rfc-editor.org/rfc/rfc6901
+.. _relative JSON pointer: https://json-schema.org/draft/2020-12/relative-json-pointer
+
 Implements `RFC 6901`_ JSON pointers, and `relative JSON pointer`_ resolution.
 
 This module is not necissarily fast (yet), but there are enough variations on
