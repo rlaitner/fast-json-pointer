@@ -26,46 +26,61 @@ fast.
      - |last commit| |commit activity| |commits since| |issues| |prs|
 
 .. |pypi| image:: https://img.shields.io/pypi/v/fast-json-pointer
+   :target: https://pypi.org/project/fast-json-pointer/
    :alt: PyPI
    
 .. |downloads| image:: https://img.shields.io/pypi/dm/fast-json-pointer
+   :target: https://pypistats.org/packages/fast-json-pointer
    :alt: PyPI - Downloads
 
 .. |formats| image:: https://img.shields.io/pypi/format/fast-json-pointer
+   :target: https://pypi.org/project/fast-json-pointer/
    :alt: PyPI - Format
 
 .. |py status| image:: https://img.shields.io/pypi/status/fast-json-pointer
+   :target: https://pypi.org/project/fast-json-pointer/
    :alt: PyPI - Status
 
 .. |py impls| image:: https://img.shields.io/pypi/implementation/fast-json-pointer
+   :target: https://pypi.org/project/fast-json-pointer/
    :alt: PyPI - Implementation
 
 .. |python| image:: https://img.shields.io/pypi/pyversions/fast-json-pointer
+   :target: https://pypi.org/project/fast-json-pointer/
    :alt: PyPI - Python Version
 
 .. |license| image:: https://img.shields.io/github/license/slowAPI/fast-json-pointer
+   :target: https://github.com/slowAPI/fast-json-pointer
    :alt: GitHub
 
 .. |checks| image:: https://img.shields.io/github/checks-status/slowAPI/fast-json-pointer/main?logo=github
+   :target: https://github.com/slowAPI/fast-json-pointer
    :alt: GitHub branch checks state
 
 .. |rtd build| image:: https://img.shields.io/readthedocs/fast-json-pointer
+   :target: https://fast-json-pointer.readthedocs.io/en/latest/?badge=latest
    :alt: Read the Docs
 
 .. |coverage| image:: https://coveralls.io/repos/github/SlowAPI/fast-json-pointer/badge.svg?branch=main
-    :target: https://coveralls.io/github/SlowAPI/fast-json-pointer?branch=main
+   :target: https://coveralls.io/github/SlowAPI/fast-json-pointer?branch=main
+   :alt: Coverage
 
 .. |last commit| image:: https://img.shields.io/github/last-commit/slowAPI/fast-json-pointer
+   :target: https://github.com/slowAPI/fast-json-pointer
    :alt: GitHub last commit
 
 .. |commit activity| image:: https://img.shields.io/github/commit-activity/m/slowAPI/fast-json-pointer
+   :target: https://github.com/slowAPI/fast-json-pointer
    :alt: GitHub commit activity
 
 .. |commits since| image:: https://img.shields.io/github/commits-since/slowAPI/fast-json-pointer/latest
+   :target: https://github.com/slowAPI/fast-json-pointer
    :alt: GitHub commits since latest release (by SemVer)
 
 .. |issues| image:: https://img.shields.io/github/issues/slowAPI/fast-json-pointer
+   :target: https://github.com/SlowAPI/fast-json-pointer/issues
    :alt: GitHub issues
 
 .. |prs| image:: https://img.shields.io/github/issues-pr/slowAPI/fast-json-pointer
+   :target: https://github.com/SlowAPI/fast-json-pointer/pulls
    :alt: GitHub pull requests
