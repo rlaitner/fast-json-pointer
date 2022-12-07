@@ -6,10 +6,12 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'JSON Pointer'
+from importlib.metadata import version as _version
+
+project = 'Fast JSON Pointer'
 copyright = '2022, Tristan Sweeney'
 author = 'Tristan Sweeney'
-release = '0.1.0'
+release = _version("fast-json-pointer")
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
