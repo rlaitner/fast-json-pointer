@@ -129,4 +129,4 @@ dmypy.json
 .pyre/
 
 coverage.lcov
-poetry.lock
+# poetry.lock checked in to facilitate caching
