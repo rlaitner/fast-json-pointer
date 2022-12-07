@@ -20,17 +20,17 @@ jobs:
           curl -sSL https://install.python-poetry.org | python3 -
           poetry version $(git describe --tags --abbrev=0)
        
-    - name: Install and run tests
-      run: |
-        curl -sSL https://install.python-poetry.org | python3 -
-        poetry install -E cli
-        poetry run pytest --cov=fast_json_pointer --cov-report lcov tests/ --doctest-modules src/
+      - name: Install and run tests
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          poetry install -E cli
+          poetry run pytest --cov=fast_json_pointer --cov-report lcov tests/ --doctest-modules src/
 
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        path-to-lcov: coverage.lcov
-        github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          path-to-lcov: coverage.lcov
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
   build-n-publish:
     name: "Build and publish Python distributions to PyPI and TestPyPI"
