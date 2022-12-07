@@ -1,5 +1,5 @@
 class JsonPointerException(Exception):
-    pass
+    '''Generic json pointer failure.'''
 
 class ParseException(JsonPointerException):
-    pass
+    '''Failure occurred while parsing a json pointer.'''
