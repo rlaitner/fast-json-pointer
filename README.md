@@ -23,7 +23,6 @@ Build
 ![GitHub commit checks state](https://img.shields.io/github/checks-status/slowAPI/fast-json-pointer/main?logo=github)
 [![Documentation Status](https://readthedocs.org/projects/fast-json-pointer/badge/?version=latest)](https://fast-json-pointer.readthedocs.io/en/latest/?badge=latest)
 [![Coverage Status](https://coveralls.io/repos/github/SlowAPI/fast-json-pointer/badge.svg?branch=main)](https://coveralls.io/github/SlowAPI/fast-json-pointer?branch=main)
-![Lines of code](https://img.shields.io/tokei/lines/github/slowAPI/fast-json-pointer)
 </td>
 </tr>
 <tr>
