@@ -3,13 +3,14 @@ name = "fast-json-pointer"
 version = "0.0.0" # See github workflow, version tags pulled automatically from git 
 description = "Implements RFC 6901 JSON pointers, and json-schema draft relative pointer resolution."
 authors = ["Tristan Sweeney <sweeneytri@gmail.com>"]
-license = "LGPLv3"
+license = "GNU Lesser General Public License v3.0"
 repository = "https://github.com/SlowAPI/py-json-pointer"
 documentation = "https://py-json-pointer.readthedocs.io/en/latest/"
 readme = "README.rst"
 keywords = ["json", "json-pointer", "rfc", "rfc 6901"]
 classifiers = [
-    "Development Status :: 1 - Planning",
+    "Development Status :: 2 - Pre-Alpha",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Topic :: Software Development :: Libraries :: Python Modules",
