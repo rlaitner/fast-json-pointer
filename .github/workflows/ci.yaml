@@ -48,8 +48,8 @@ jobs:
           python-version: '3.11'
           cache: 'poetry'
     
-      #- name: Set package version
-      #  run: poetry version $(git rev-parse --short HEAD)
+      - name: Set package version
+        run: poetry version "$(poetry version)+$(git rev-parse --short HEAD)"
 
       - name: Build a binary wheel and a source tarball
         run: poetry build
