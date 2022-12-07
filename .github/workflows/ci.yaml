@@ -4,7 +4,7 @@ name: "CI"
 on: [push, pull_request]
 
 jobs:
-  testing:
+  test:
     name: "Test"
     runs-on: ubuntu-latest
     steps:
@@ -13,21 +13,17 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
 
-      - name: Set up Python 3.11
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
           cache: 'poetry'
     
-      #- name: Set package version
-      #  run: |
-      #    curl -sSL https://install.python-poetry.org | python3 -
-      #    poetry version $(git describe --tags --abbrev=0)
-       
-      - name: Install and run tests
-        run: |
-          poetry install -E cli
-          poetry run pytest --cov=fast_json_pointer --cov-report lcov tests/ --doctest-modules src/
+      - name: Install package under test
+        run: poetry install -E cli
+
+      - name: Run tests
+        run: poetry run pytest --cov=fast_json_pointer --cov-report lcov tests/ --doctest-modules src/
 
       - name: Coveralls
         uses: coverallsapp/github-action@master
@@ -35,10 +31,10 @@ jobs:
           path-to-lcov: coverage.lcov
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-  build-n-test-publish:
+  test-publish:
     name: "TestPyPI"
     if: "! startsWith(github.ref, 'refs/tags/v')"
-    needs: [testing]
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
@@ -46,29 +42,27 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
 
-      - name: Set up Python 3.11
+      - name: Set up Python
         uses: actions/setup-python@v3
         with:
           python-version: '3.11'
           cache: 'poetry'
     
-      - name: Set package version
-        run: |
-          poetry version $(git rev-parse --short HEAD)
+      #- name: Set package version
+      #  run: poetry version $(git rev-parse --short HEAD)
 
       - name: Build a binary wheel and a source tarball
-        run: poetry run build --sdist --wheel --outdir dist/
+        run: poetry build
 
-      - name: Publish distribution 📦 to Test PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
+      - name: Publish to test PyPI
+        run: poetry publish --username=__token__ --repository=https://test.pypi.org/legacy/
+        env:
+          PYPI_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
 
-  build-n-publish:
+  publish:
     name: "PyPI"
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [testing]
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
@@ -76,25 +70,25 @@ jobs:
       - name: Install poetry
         run: pipx install poetry
 
-      - name: Set up Python 3.11
+      - name: Set up Python
         uses: actions/setup-python@v3
         with:
           python-version: '3.11'
           cache: 'poetry'
     
       - name: Set package version
-        run: |
-          poetry version $(git describe --tags --abbrev=0)
+        run: poetry version $(git describe --tags --abbrev=0)
 
       - name: Build a binary wheel and a source tarball
-        run:  poetry run build --sdist --wheel --outdir dist/
+        run:  poetry build
 
-      - name: Release
+      - name: Create github release
         uses: softprops/action-gh-release@v1
         with:
           files: dist/*
-      
-      - name: "Publish distribution to PyPI"
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: '${{ secrets.PYPI_API_TOKEN }}'
+
+      - name: Publish to PyPI
+        run: poetry publish --username=__token__
+        env:
+          PYPI_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+ 
