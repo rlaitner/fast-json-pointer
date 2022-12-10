@@ -41,14 +41,18 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Install tomlq
-        run: pipx install tomlq
-
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.11'
+          
       - name: Compare poetry version
         id: compare-poetry
         run: |
-          OLD="$(git show HEAD~:pyproject.toml | tomlq tool.poetry.version)"
-          NEW="$(cat pyproject.toml | tomlq tool.poetry.version)"
+          parse_toml = "python -c 'import tomllib as t; import sys; print(t.loads(sys.stdin.read()))'"
+
+          OLD="$(git show HEAD~:pyproject.toml | parse_toml | jq tool.poetry.version)"
+          NEW="$(cat pyproject.toml | parse_toml | jq tool.poetry.version)"
                     
           if [ "$OLD" = "$NEW" ]; then
               echo "bump=true" >> $GITHUB_OUTPUT
