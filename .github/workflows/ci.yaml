@@ -37,8 +37,8 @@ jobs:
     outputs:
       bump: ${{ steps.compare-poetry.outputs.bump }}
     steps:
-      - name: Install poetry
-        run: pipx install poetry tomlq
+      - name: Install tomlq
+        run: pipx install tomlq
 
       - name: Compare poetry version
         id: compare-poetry
@@ -62,8 +62,8 @@ jobs:
         with:
           fetch-depth: 1
       
-
-
+      - name: Install poetry
+        run: pipx install poetry
 
       - name: Set up Python
         uses: actions/setup-python@v3
