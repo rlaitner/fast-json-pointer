@@ -40,14 +40,14 @@ jobs:
       - uses: actions/checkout@master
         with:
           fetch-depth: 1
-          
+
       - name: Install tomlq
         run: pipx install tomlq
 
       - name: Compare poetry version
         id: compare-poetry
         run: |
-          OLD="$(git show HEAD~:pyproject.toml | tomlq tool.poetry.version)"
+          OLD="$(git show ${{github.ref}}~:pyproject.toml | tomlq tool.poetry.version)"
           NEW="$(cat pyproject.toml | tomlq tool.poetry.version)"
                     
           if [ "$OLD" = "$NEW" ]; then
