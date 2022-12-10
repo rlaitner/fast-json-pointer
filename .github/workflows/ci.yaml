@@ -49,10 +49,10 @@ jobs:
       - name: Compare poetry version
         id: compare-poetry
         run: |
-          parse_toml = "python -c 'import tomllib as t; import sys; print(t.loads(sys.stdin.read()))'"
+          PARSE_TOML = "python -c 'import tomllib as t; import sys; print(t.loads(sys.stdin.read()))'"
 
-          OLD="$(git show HEAD~:pyproject.toml | parse_toml | jq tool.poetry.version)"
-          NEW="$(cat pyproject.toml | parse_toml | jq tool.poetry.version)"
+          OLD="$(git show HEAD~:pyproject.toml | $PARSE_TOML | jq tool.poetry.version)"
+          NEW="$(cat pyproject.toml | $PARSE_TOML | jq tool.poetry.version)"
                     
           if [ "$OLD" = "$NEW" ]; then
               echo "bump=true" >> $GITHUB_OUTPUT
