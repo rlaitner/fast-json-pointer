@@ -37,6 +37,10 @@ jobs:
     outputs:
       bump: ${{ steps.compare-poetry.outputs.bump }}
     steps:
+      - uses: actions/checkout@master
+        with:
+          fetch-depth: 1
+          
       - name: Install tomlq
         run: pipx install tomlq
 
