@@ -1,0 +1,42 @@
+name: Publish to PyPI
+
+on:
+  workflow_call:
+    inputs:
+      repo:
+        required: false
+        type: string
+    secrets:
+      pypi-token:
+        required: true
+
+jobs:
+  publish:
+    name: "Publish PyPI"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Install poetry
+        run: pipx install poetry
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.11'
+          cache: 'poetry'
+    
+      - name: Set package version
+        run: poetry version $(git describe --tags --abbrev=0)
+
+      - name: Build a binary wheel and a source tarball
+        run: poetry build
+
+      - name: Set target repo
+        if: ${{ inputs.repo }}
+        run: poetry config repo.pypi ${{ inputs.repo }}
+
+      - name: Publish to PyPI
+        run: |
+          poetry config pypi-token.pypi ' ${{ secrets.pypi-token }}'
+          poetry publish
