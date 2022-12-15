@@ -31,36 +31,10 @@ jobs:
           path-to-lcov: coverage.lcov
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-  diff-scan:
-    name: "Diff scan"
-    runs-on: ubuntu-latest
-    outputs:
-      bump: ${{ steps.compare-poetry.outputs.bump }}
-    steps:
-      - uses: actions/checkout@master
-        with:
-          fetch-depth: 2
-
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.11'
-          
-      - name: Compare poetry version
-        id: compare-poetry
-        run: |
-          OLD="$(git show HEAD~:pyproject.toml | python -c 'import tomllib as t; import sys; print(t.loads(sys.stdin.read()))' | jq tool.poetry.version)"
-          NEW="$(cat pyproject.toml | python -c 'import tomllib as t; import sys; print(t.loads(sys.stdin.read()))' | jq tool.poetry.version)"
-                    
-          if [ "$OLD" = "$NEW" ]; then
-              echo "bump=true" >> $GITHUB_OUTPUT
-          else
-            echo "bump=false" >> $GITHUB_OUTPUT
-          fi
 
   test-publish:
     name: "TestPyPI"
-    if: ${{! startsWith(github.ref, 'refs/tags/v') && needs.diff-scan.outputs.bump }}
+    if: ${{! startsWith(github.ref, 'refs/tags/v') }}
     needs: [test]
     runs-on: ubuntu-latest
     steps:
@@ -78,7 +52,7 @@ jobs:
           cache: 'poetry'
     
       - name: Set package version
-        run: poetry version "$(poetry version)"
+        run: poetry version $(git describe --tags --abbrev=0)
 
       - name: Build a binary wheel and a source tarball
         run: poetry build
@@ -92,7 +66,7 @@ jobs:
   publish:
     name: "PyPI"
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: [test]
+    needs: [test, test-publish]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
@@ -118,7 +92,7 @@ jobs:
           files: dist/*
 
       - name: Publish to PyPI
-        run: poetry publish --username=__token__
-        env:
-          PYPI_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          poetry config pypi-token.test-pypi '${{ secrets.PYPI_API_TOKEN }}'
+          poetry publish
  
