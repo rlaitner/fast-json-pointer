@@ -6,7 +6,7 @@ on:
       repo:
         required: false
         type: string
-        default: https://pypi.org/
+        default: https://upload.pypi.org/
       gh-release:
         required: false
         type: boolean
