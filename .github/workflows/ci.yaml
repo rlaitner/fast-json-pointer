@@ -36,7 +36,7 @@ jobs:
     name: "TestPyPI"
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [test]
-    uses: .github/workflows/pypi.yaml
+    uses: ./.github/workflows/pypi.yaml
     with:
       repo: https://test.pypi.org/legacy/
     secrets:
@@ -46,6 +46,6 @@ jobs:
     name: "PyPI"
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [test, test-publish]
-    uses: .github/workflows/pypi.yaml
+    uses: ./.github/workflows/pypi.yaml
     secrets:
       pypi-token: "${{ secrets.PYPI_API_TOKEN }}"
