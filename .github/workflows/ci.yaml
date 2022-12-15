@@ -15,9 +15,9 @@ jobs:
         with:
           key: poetry
           path: |
-            ~/.local/pipx/venvs
+            /opt/pipx/venvs
 
-      - name: Install poetry
+      - name: Install poetryp
         run: pipx install poetry
 
       - name: Set up Python
