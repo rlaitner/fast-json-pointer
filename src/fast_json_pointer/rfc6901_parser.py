@@ -1,6 +1,5 @@
-'''Implements low-level json pointer parsing. See `RFC 6901 Section 4
-<https://www.rfc-editor.org/rfc/rfc6901#section-4>`_ for the specification that this
-parser adheres to.
+'''Implements json pointer parsing. See `RFC 6901 Section 4
+<https://www.rfc-editor.org/rfc/rfc6901#section-4>`_ for the specification.
 '''
 
 import re
