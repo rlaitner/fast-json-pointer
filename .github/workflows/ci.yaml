@@ -16,6 +16,7 @@ jobs:
           key: poetry
           path: |
             /opt/pipx/venvs
+            /opt/pipx_bin
 
       - name: Install poetryp
         run: pipx install poetry
