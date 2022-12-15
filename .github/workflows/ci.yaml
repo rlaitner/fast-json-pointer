@@ -37,7 +37,7 @@ jobs:
     needs: [test]
     uses: ./.github/workflows/pypi.yaml
     with:
-      repo: https://test.pypi.org/legacy/
+      repo: test-pypi
     secrets:
       pypi-token: "${{ secrets.TEST_PYPI_API_TOKEN }}"
 

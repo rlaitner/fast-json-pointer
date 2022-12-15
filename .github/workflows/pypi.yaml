@@ -6,6 +6,7 @@ on:
       repo:
         required: false
         type: string
+        default: pypi
       gh-release:
         required: false
         type: boolean
@@ -36,10 +37,6 @@ jobs:
       - name: Build a binary wheel and a source tarball
         run: poetry build
 
-      - name: Set target repo
-        if: inputs.repo
-        run: poetry config repo.target-pypi ${{ inputs.repo }}
-
       - name: Create github release
         if: inputs.gh-release
         uses: softprops/action-gh-release@v1
@@ -48,5 +45,6 @@ jobs:
 
       - name: Publish to PyPI
         run: |
-          poetry config pypi-token.target-pypi ' ${{ secrets.pypi-token }}'
-          poetry publish --repository=target-pypi
+          poetry config repo.test-pypi https://test.pypi.org/legacy/
+          poetry config pypi-token.${{ inputs.repo }} '${{ secrets.pypi-token }}'
+          poetry publish --skip-existing --repository=${{ inputs.repo }}
