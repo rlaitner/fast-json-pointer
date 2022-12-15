@@ -11,6 +11,15 @@ RFC 6901 Parser
 .. autofunction:: escape
 .. autofunction:: unescape
 
+
+Relative Pointer Parser
++++++++++++++++++++++++
+.. automodule:: fast_json_pointer.draft_parser
+
+.. autofunction:: parse
+.. autofunction:: unparse
+
+
 Exceptions
 ++++++++++
 .. automodule:: fast_json_pointer.exceptions
