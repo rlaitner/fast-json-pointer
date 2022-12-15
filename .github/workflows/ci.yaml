@@ -49,7 +49,7 @@ jobs:
       - name: Compare poetry version
         id: compare-poetry
         run: |
-          OLD="$(git show HEAD~:pyproject.toml | python -c 'import tomllib as t; import sys; print(t.loads(sys.stdin.read()))'Do | jq tool.poetry.version)"
+          OLD="$(git show HEAD~:pyproject.toml | python -c 'import tomllib as t; import sys; print(t.loads(sys.stdin.read()))' | jq tool.poetry.version)"
           NEW="$(cat pyproject.toml | python -c 'import tomllib as t; import sys; print(t.loads(sys.stdin.read()))' | jq tool.poetry.version)"
                     
           if [ "$OLD" = "$NEW" ]; then
