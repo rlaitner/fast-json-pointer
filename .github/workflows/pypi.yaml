@@ -6,6 +6,10 @@ on:
       repo:
         required: false
         type: string
+      gh-release:
+        required: false
+        type: boolean
+        default: false
     secrets:
       pypi-token:
         required: true
@@ -33,10 +37,16 @@ jobs:
         run: poetry build
 
       - name: Set target repo
-        if: ${{ inputs.repo }}
-        run: poetry config repo.pypi ${{ inputs.repo }}
+        if: inputs.repo
+        run: poetry config repo.target-pypi ${{ inputs.repo }}
+
+      - name: Create github release
+        if: inputs.gh-release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*
 
       - name: Publish to PyPI
         run: |
-          poetry config pypi-token.pypi ' ${{ secrets.pypi-token }}'
-          poetry publish
+          poetry config pypi-token.target-pypi ' ${{ secrets.pypi-token }}'
+          poetry publish --repository=target-pypi
