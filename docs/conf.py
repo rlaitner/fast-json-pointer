@@ -6,12 +6,17 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-from importlib.metadata import version as _version
+import os
+import re
 
 project = 'Fast JSON Pointer'
 copyright = '2022, Tristan Sweeney'
 author = 'Tristan Sweeney'
-release = _version("fast-json-pointer")
+
+# The full version, including alpha/beta/rc tags.
+release = re.sub('^v', '', os.popen('git describe --tags').read().strip())
+# The short X.Y version.
+version = release
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
