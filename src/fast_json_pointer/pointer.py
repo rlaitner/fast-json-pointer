@@ -17,6 +17,8 @@ class JsonPointer(_ReprStrMixin):
     
     >>> JsonPointer(['~home', 'foo.txt', 'mime/type'])
     JsonPointer('/~0home/foo.txt/mime~1type')
+    >>> JsonPointer.parse('/~0home/foo.txt/mime~1type')
+    JsonPointer('/~0home/foo.txt/mime~1type')
     '''
     parts: list[str]
     '''Unescaped list of path parts.
