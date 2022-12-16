@@ -14,7 +14,7 @@ RFC 6901 Parser
 
 Relative Pointer Parser
 +++++++++++++++++++++++
-.. automodule:: fast_json_pointer.draft_parser
+.. automodule:: fast_json_pointer.rel_parser
 
 .. autofunction:: parse
 .. autofunction:: unparse
