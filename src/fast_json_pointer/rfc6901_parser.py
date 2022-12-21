@@ -1,6 +1,6 @@
-'''Implements json pointer parsing. See `RFC 6901 Section 4
+"""Implements json pointer parsing. See `RFC 6901 Section 4
 <https://www.rfc-editor.org/rfc/rfc6901#section-4>`_ for the specification.
-'''
+"""
 
 import re
 from typing import *
@@ -11,8 +11,8 @@ RE_INVALID_ESCAPE = re.compile("(~[^01]|~$)")
 
 
 def validate(pointer: str) -> None:
-    '''Validate that a string is a well formed json pointer.
-    
+    """Validate that a string is a well formed json pointer.
+
     :raises: :exc:`.ParseException`: If json pointer is invalid.
 
     >>> validate('') # empty string is fine, means "whole json object"
@@ -25,8 +25,8 @@ def validate(pointer: str) -> None:
     >>> validate('/~2/foo') # only ~0, ~1 are valid escapes
     Traceback (most recent call last):
     fast_json_pointer.exceptions.ParseException: ...
-    '''
-    
+    """
+
     if len(pointer) > 0 and not pointer.startswith("/"):
         raise ParseException("JSON pointers must be empty or start with '/'")
 
@@ -35,7 +35,7 @@ def validate(pointer: str) -> None:
 
 
 def parse(pointer: str) -> list[str]:
-    r'''Parse a json pointer into a list of unescaped path parts.
+    r"""Parse a json pointer into a list of unescaped path parts.
 
     :raises: :exc:`.ParseException`: If json pointer is invalid.
 
@@ -51,18 +51,18 @@ def parse(pointer: str) -> list[str]:
     ['c%d', 'e^f']
     >>> parse(r'/i\\j/g|h/k\l') # r-string avoids escaping backslashes
     ['i\\\\j', 'g|h', 'k\\l']
-    '''
+    """
     validate(pointer)
 
     parts = pointer.split("/")
     # discard "empty" str, as "/foo/bar".split() becomes ["", "foo", "bar"]
-    parts.pop(0) 
+    parts.pop(0)
     return [unescape(p) for p in parts]
 
 
 def unparse(parts: Iterable[str]) -> str:
-    r'''Combine an iterable of unescaped path parts into a json pointer.
-    
+    r"""Combine an iterable of unescaped path parts into a json pointer.
+
     >>> unparse([])
     ''
     >>> unparse([''])
@@ -75,29 +75,29 @@ def unparse(parts: Iterable[str]) -> str:
     '/c%d/e^f'
     >>> unparse([r'i\\j', 'g|h', r'k\l'])
     '/i\\\\j/g|h/k\\l'
-    '''
-    return "".join('/' + escape(part) for part in parts)
+    """
+    return "".join("/" + escape(part) for part in parts)
 
 
 def escape(part: str) -> str:
-    '''Escape a path part.
-    
+    """Escape a path part.
+
     >>> escape("foo")
     'foo'
     >>> escape("m~/0")
     'm~0~10'
-    '''
+    """
     # Escape `~` first! https://www.rfc-editor.org/rfc/rfc6901#section-4
     return part.replace("~", "~0").replace("/", "~1")
 
 
 def unescape(part: str) -> str:
-    '''Unescape a path part.
-    
+    """Unescape a path part.
+
     >>> unescape("foo")
     'foo'
     >>> unescape("m~0~10")
     'm~/0'
-    '''
+    """
     # Unscape `~` last! https://www.rfc-editor.org/rfc/rfc6901#section-4
     return part.replace("~1", "/").replace("~0", "~")
