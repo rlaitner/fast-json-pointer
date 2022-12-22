@@ -1,120 +1,283 @@
 from dataclasses import dataclass, field
 from typing import *
 
+from .exceptions import EndOfArrayException, ResolutionException
 from .pointer import JsonPointer, RelativeJsonPointer
-
-from .exceptions import ResolutionException
 
 JsonType = dict[str, "JsonType"] | list["JsonType"] | str | bool | int | float | None
 
+
 @dataclass
 class JsonRef:
-    ref: JsonType
+    doc: JsonType
     pointer: JsonPointer
 
 
-def _resolve_ref(doc: JsonType, part: str, base_pointer: JsonPointer) -> JsonRef:
-    base_pointer = JsonPointer([*base_pointer.parts, part])
-
+def _resolve_ref(doc: JsonType, part: str) -> JsonType:
     match doc:
         case dict():
             if part not in doc:
-                raise ResolutionException(f"Key '{part}' not in '{doc}' '{base_pointer}'")
+                raise ResolutionException(f"Key '{part}' not in JSON object")
 
-            doc = doc[part]
+            return doc[part]
 
         case list():
+            if part == "-":
+                raise EndOfArrayException("Hit '-' (end of array) token")
+
             part_idx = int(part)
             if part_idx >= len(doc):
-                raise ResolutionException(f"Index '{part_idx}' not in '{doc}' '{base_pointer}'")
+                raise ResolutionException(f"Index '{part_idx}' not in JSON array")
 
-            doc = doc[part_idx]
+            return doc[part_idx]
 
         case _:
-            raise ResolutionException(f"Unnvaigable doc type '{type(part)}' '{doc}' '{base_pointer}'")
-    
-    return JsonRef(doc, base_pointer)
-                
+            raise ResolutionException(f"Unnvaigable doc type '{type(part)}'")
 
 
-def _resolve(doc: JsonType, parts: list[str], *, base_pointer: JsonPointer | None = None) -> list[JsonRef]:
-    base_pointer = base_pointer or JsonPointer.parse("")
-    doc_refs = [JsonRef(doc, base_pointer)]
+def _resolve(doc: JsonType, pointer: JsonPointer, *, base_pointer: JsonPointer | None = None) -> list[JsonRef]:
+    doc_pointer = JsonPointer([]) if base_pointer is None else base_pointer
+    doc_refs = [JsonRef(doc, doc_pointer)]
 
-    for part in parts:
-        ref = _resolve_ref(doc, part, base_pointer)
-        doc_refs.append(ref)
-        doc = ref.ref
-        base_pointer = ref.pointer
+    for idx, part in enumerate(pointer.parts):
+        try:
+            doc = _resolve_ref(doc, part)
+        except Exception as e:
+            raise ResolutionException(
+                "Error resolving json pointer",
+                doc_refs=doc_refs,
+                remaining=pointer.parts[idx:],
+            ) from e
+
+        doc_pointer = JsonPointer([*doc_pointer.parts, part])
+        doc_refs.append(JsonRef(doc, doc_pointer))
 
     return doc_refs
 
 
-def get(doc: JsonType, pointer: JsonPointer, *, rel_pointer: RelativeJsonPointer | None = None) -> JsonType:
-    '''
-    
-    >>> get({}, JsonPointer.parse(""))
-    {}
-    >>> get({'x': 5}, JsonPointer.parse("/x"))
-    5
-    >>> get({'x': {'': 3}}, JsonPointer.parse("/x/"))
-    3
-    >>> get({'x': {'': 3, 'z': 12}}, JsonPointer.parse("/x/"), rel_pointer=RelativeJsonPointer.parse("1/z"))
-    12
-    >>> get({'x': {'': 3}, 'z': 12}, JsonPointer.parse("/x/"), rel_pointer=RelativeJsonPointer.parse("1#"))
-    'x'
-    >>> get([{'x': {'': 3}}, 4], JsonPointer.parse("/0/x"), rel_pointer=RelativeJsonPointer.parse("1#"))
-    '0'
-    >>> get([{'x': {'': 3}}, 4], JsonPointer.parse("/0/x"), rel_pointer=RelativeJsonPointer.parse("0//does-not-exist"))
-    Traceback (most recent call last):
-    fast_json_pointer.exceptions.ResolutionException: ...
-    >>> get([{'x': {'': 3}}, 4], JsonPointer.parse("/3"))
-    Traceback (most recent call last):
-    fast_json_pointer.exceptions.ResolutionException: ...
-    >>> get([{'x': {'': 3}}, 4], JsonPointer.parse("/0/z"))
-    Traceback (most recent call last):
-    fast_json_pointer.exceptions.ResolutionException: ...
-    '''
-    doc_refs = _resolve(doc, pointer.parts)
-    
-    if rel_pointer:
-        if rel_pointer.offset > 0:
-            doc_refs = doc_refs[:-rel_pointer.offset]
-        pointer = doc_refs[-1].pointer
 
+def resolve(
+    doc: JsonType, pointer: JsonPointer, *, rel: RelativeJsonPointer | None = None
+) -> list[JsonRef]:
+    doc_refs = _resolve(doc, pointer)
+
+    if rel:
+        if rel.offset > 0:
+            doc_refs = doc_refs[: -rel.offset]
+
+        last_ref = doc_refs[-1]
         
-        if rel_pointer.is_index_ref:
-            return pointer.parts[-1]
+        if rel.is_index_ref:
+            return doc_refs + [JsonRef(last_ref.pointer.parts[-1], last_ref.pointer)]
 
-        new_refs = _resolve(doc_refs[-1].ref, rel_pointer.parts, base_pointer=pointer)
+        new_refs = _resolve(last_ref.doc, rel.pointer, base_pointer=last_ref.pointer)
         doc_refs.extend(new_refs)
 
-    return doc_refs[-1].ref
+    return doc_refs
 
-def set(doc: JsonType, pointer: JsonPointer, value: JsonType, *, rel_pointer: RelativeJsonPointer | None = None) -> None:
-    '''
-    >>> x = {}
-    >>> set(x, JsonPointer.parse("/x"), 2)
-    >>> x
+
+
+def get(
+    doc: JsonType,
+    pointer: str | JsonPointer,
+    *,
+    rel: str | RelativeJsonPointer | None = None,
+) -> JsonType:
+    """
+
+    >>> get({}, "")
+    {}
+    >>> get({'x': 5}, "/x")
+    5
+    >>> get({'x': {'': 3}}, "/x/")
+    3
+    >>> get({'x': {'': 3, 'z': 12}}, "/x/", rel="1/z")
+    12
+    >>> get({'x': {'': 3}, 'z': 12}, "/x/", rel="1#")
+    'x'
+    >>> get([{'x': {'': 3}}, 4], "/0/x", rel="1#")
+    '0'
+
+    Trying to get fields that don't exist is a bad idea...
+
+    >>> get([{'x': {'': 3}}, 4], "/0/x", rel="0//does-not-exist")
+    Traceback (most recent call last):
+    fast_json_pointer.exceptions.ResolutionException: ...
+    >>> get([{'x': {'': 3}}, 4], "/3")
+    Traceback (most recent call last):
+    fast_json_pointer.exceptions.ResolutionException: ...
+    >>> get([{'x': {'': 3}}, 4], "/0/z")
+    Traceback (most recent call last):
+    fast_json_pointer.exceptions.ResolutionException: ...
+    """
+    match pointer:
+        case str():
+            pointer = JsonPointer.parse(pointer)
+
+    match rel:
+        case str():
+            rel = RelativeJsonPointer.parse(rel)
+
+    doc_refs = resolve(doc, pointer, rel=rel)
+
+    return doc_refs[-1].doc
+
+
+def _set_ref(doc: JsonType, part: str, value: JsonType) -> None:
+    match doc:
+        case dict():
+            doc[part] = value
+        case list():
+            part_idx = int(part)
+            doc[part_idx] = value
+        case _:
+            raise RuntimeError(f"Unnavigable type {type(doc)}")
+
+
+def add(
+    doc: JsonType,
+    pointer: str | JsonPointer,
+    value: JsonType,
+    *,
+    rel: str | RelativeJsonPointer | None = None,
+) -> None:
+    """
+    >>> obj = {}
+    >>> add(obj, "/x", 2)
+    >>> obj
     {'x': 2}
 
-    >>> x = {'x': 2}
-    >>> set(x, JsonPointer.parse("/x"), 3, rel_pointer=RelativeJsonPointer.parse("1/y"))
-    >>> x = {'x': 2, 'y': 3}
-    '''
-    doc_refs = _resolve(doc, pointer.parts[:-1])
-    try:
-        new_refs = _resolve_ref(doc_refs[-1].ref, pointer.parts[-1], base_pointer=doc_refs[-1].pointer)
-        match doc_refs[-1].ref:
-            case dict():
-                doc_refs[-1].ref[pointer.parts[-1]] = value
-            case list():
-                doc_refs[-1].ref[int(pointer.parts[-1])] = value
+    >>> obj = {'x': 2}
+    >>> add(obj, "", 'foo', rel="0/y")
+    >>> obj
+    {'x': 2, 'y': 'foo'}
 
-    except ResolutionException:
-        if rel_pointer is None:
-            match doc_refs[-1].ref:
-                    case dict():
-                        doc_refs[-1].ref[pointer.parts[-1]] = value
-                    case list():
-                        doc_refs[-1].ref[int(pointer.parts[-1])] = value
+    >>> obj = {'x': 2}
+    >>> add(obj, "/x", 'foo', rel="1/x")
+    >>> obj
+    {'x': 'foo'}
+
+    >>> obj = {'x': 2}
+    >>> add(obj, "/x", 'foo', rel="1/y")
+    >>> obj
+    {'x': 2, 'y': 'foo'}
+    """
+
+    match pointer:
+        case str():
+            pointer = JsonPointer.parse(pointer)
+
+    match rel:
+        case str():
+            rel = RelativeJsonPointer.parse(rel)
+
+    if rel and rel.is_index_ref:
+        raise RuntimeError()
+
+    try:
+        doc_refs = resolve(doc, pointer, rel=rel)
+        parent = doc_refs[-2].doc
+        part = rel.pointer.parts[-1] if rel is not None else pointer.parts[-1]
+    except ResolutionException as e:
+        if len(e.remaining) > 1:
+            raise
+
+        parent = e.doc_refs[-1].doc
+        part = e.remaining[0]
+
+    _set_ref(parent, part, value)
+
+
+def remove(doc, pointer: str | JsonPointer,  *, rel: str | RelativeJsonPointer | None = None) -> None:
+    '''
+    >>> obj = {'x': 2}
+    >>> remove(obj, "/x")
+    >>> obj
+    {}
+    '''
+    match pointer:
+        case str():
+            pointer = JsonPointer.parse(pointer)
+
+    match rel:
+        case str():
+            rel = RelativeJsonPointer.parse(rel)
+
+    doc_refs = resolve(doc, pointer, rel=rel)
+    parent = doc_refs[-2]
+    last_ref = doc_refs[-1]
+
+    part = last_ref.pointer.parts[-1]
+
+    match parent.doc:
+        case dict():
+            del parent.doc[part]
+        case list():
+            del parent.doc[int(part)]
+        case _:
+            raise RuntimeError()
+    
+
+def replace(doc, pointer: str | JsonPointer, value: JsonType, *, rel: str | RelativeJsonPointer | None = None) -> None:
+    '''
+    >>> obj = {'x': 2}
+    >>> replace(obj, "/x", ['foo'])
+    >>> obj
+    {'x': ['foo']}
+    '''
+    
+    match pointer:
+        case str():
+            pointer = JsonPointer.parse(pointer)
+
+    match rel:
+        case str():
+            rel = RelativeJsonPointer.parse(rel)
+
+    doc_refs = resolve(doc, pointer, rel=rel)
+    parent = doc_refs[-2]
+    last_ref = doc_refs[-1]
+
+    part = last_ref.pointer.parts[-1]
+
+    match parent.doc:
+        case dict():
+            parent.doc[part] = value
+        case list():
+            parent.doc.insert(int(part), value)
+        case _:
+            raise RuntimeError()
+
+
+def move(doc, from_: str | JsonPointer, pointer: str | JsonPointer, *, rel: str | RelativeJsonPointer | None = None, from_rel: str | RelativeJsonPointer | None = None) -> None:
+    '''
+    >>> obj = {'x': 2}
+    >>> move(obj, "/x", "/y")
+    >>> obj
+    {'y': 2}
+    '''
+    
+    obj = get(doc, from_, rel=from_rel)
+    remove(doc, from_, rel=from_rel)
+    add(doc, pointer, obj, rel=rel)
+
+
+def copy(doc, from_: str | JsonPointer, pointer: str | JsonPointer, *, rel: str | RelativeJsonPointer | None = None, from_rel: str | RelativeJsonPointer | None = None) -> None:
+    '''
+    >>> obj = {'x': 2}
+    >>> copy(obj, "/x", "/y")
+    >>> obj
+    {'x': 2, 'y': 2}
+    '''
+    obj = get(doc, from_, rel=from_rel)
+    add(doc, pointer, obj, rel=rel)
+
+
+def test(doc, pointer: str | JsonPointer, value: JsonType, *, rel: str | RelativeJsonPointer | None = None) -> bool:
+    '''
+    >>> obj = {'x': 2}
+    >>> test(obj, "/x", 2)
+    True
+    '''
+    obj = get(doc, pointer, rel=rel)
+    return obj == value
