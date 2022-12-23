@@ -8,6 +8,17 @@ def test_parse():
     parsed = rfc6901_parser.parse("/foo/3/za")
     assert parsed == ["foo", "3", "za"]
 
+def test_parse_escape_sequence_tilda():
+    parsed = rfc6901_parser.parse("/foo/~0/za")
+    assert parsed == ["foo", "~", "za"]
+
+def test_parse_escape_sequence_solidus():
+    parsed = rfc6901_parser.parse("/foo/~1/za")
+    assert parsed == ["foo", "/", "za"]
+
+def test_parse_escape_sequence_combined():
+    parsed = rfc6901_parser.parse("/foo/~01/za")
+    assert parsed == ["foo", "~1", "za"]
 
 def test_parse_exceptions():
 
