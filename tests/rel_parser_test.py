@@ -19,6 +19,16 @@ def test_relative_parse_number_sign():
 
     assert RELATIVE_RESPONSE == relative_pointer
 
+def test_relative_parse_null_char():
+    NULL_CHAR = "\x00"
+
+    SERIALIZED_POINTER = "0/foo" + NULL_CHAR
+    RELATIVE_RESPONSE = (0, ["foo", NULL_CHAR])
+
+    relative_pointer = rel_parser.parse(SERIALIZED_POINTER)
+
+    assert RELATIVE_RESPONSE == relative_pointer
+
 
 def test_relative_parse_exceptions():
     POINTER = "-1"
@@ -63,6 +73,16 @@ def test_relative_unparse_pointer():
 def test_relative_unparse_number_sign():
     RELATIVE_POINTER = (0, None)
     SERIALIZED_RESPONSE = "0#"
+
+    serialized_pointer = rel_parser.parse(RELATIVE_POINTER)
+
+    assert SERIALIZED_RESPONSE == serialized_pointer
+
+def test_relative_unparse_null_char():
+    NULL_CHAR = "\x00"
+
+    RELATIVE_POINTER = (0, ["foo", NULL_CHAR])
+    SERIALIZED_RESPONSE = "0/foo" + NULL_CHAR
 
     serialized_pointer = rel_parser.parse(RELATIVE_POINTER)
 
