@@ -1,24 +1,33 @@
 import pytest
+from typing import List
 
 from fast_json_pointer import rfc6901_parser
 from fast_json_pointer.exceptions import ParseException
 
 
 def test_parse():
-    parsed = rfc6901_parser.parse("/foo/3/za")
-    assert parsed == ["foo", "3", "za"]
+    POINTER = "/foo/3/za"
+    TOKENS = ["foo", "3", "za"]
+    
+    assert_parsed_pointer_against_tokens(POINTER, TOKENS)
 
 def test_parse_escape_sequence_tilda():
-    parsed = rfc6901_parser.parse("/foo/~0/za")
-    assert parsed == ["foo", "~", "za"]
+    POINTER = "/foo/~0/za"
+    TOKENS = ["foo", "~", "za"]
+    
+    assert_parsed_pointer_against_tokens(POINTER, TOKENS)
 
 def test_parse_escape_sequence_solidus():
-    parsed = rfc6901_parser.parse("/foo/~1/za")
-    assert parsed == ["foo", "/", "za"]
+    POINTER = "/foo/~1/za"
+    TOKENS = ["foo", "/", "za"]
+    
+    assert_parsed_pointer_against_tokens(POINTER, TOKENS)
 
 def test_parse_escape_sequence_combined():
-    parsed = rfc6901_parser.parse("/foo/~01/za")
-    assert parsed == ["foo", "~1", "za"]
+    POINTER = "/foo/~01/za"
+    TOKENS = ["foo", "~1", "za"]
+    
+    assert_parsed_pointer_against_tokens(POINTER, TOKENS)
 
 def test_parse_exceptions():
 
@@ -40,5 +49,34 @@ def test_parse_exceptions():
 
 
 def test_unparse():
-    unparsed = rfc6901_parser.unparse(["foo", "3", "za"])
-    assert unparsed == "/foo/3/za"
+    TOKENS = ["foo", "3", "za"]
+    POINTER = "/foo/3/za"
+    
+    assert_unparsed_tokens_against_pointer(TOKENS, POINTER)
+
+def test_unparse_escape_sequence_tilda():
+    TOKENS = ["foo", "~", "za"]
+    POINTER = "/foo/~0/za"
+    
+    assert_unparsed_tokens_against_pointer(TOKENS, POINTER)
+
+def test_unparse_escape_sequence_solidus():
+    TOKENS = ["foo", "/", "za"]
+    POINTER = "/foo/~1/za"
+    
+    assert_unparsed_tokens_against_pointer(TOKENS, POINTER)
+
+def test_unparse_escape_sequence_combined():
+    TOKENS = ["foo", "~1", "za"]
+    POINTER = "/foo/~01/za"
+    
+    assert_unparsed_tokens_against_pointer(TOKENS, POINTER)
+
+
+def assert_parsed_pointer_against_tokens(pointer: str, tokens: List[str])
+    parsed = rfc6901_parser.parse(pointer)
+    assert parsed == tokens
+
+def assert_unparsed_tokens_against_pointer(tokens: List[str], pointer: str)
+    unparsed = rfc6901_parser.unparse(tokens)
+    assert unparsed == pointer
