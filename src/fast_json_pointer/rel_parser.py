@@ -1,4 +1,4 @@
-"""Implements releative json pointer parsing. See `2020-12 relative json
+"""Implements relative json pointer parsing. See `2020-12 relative json
 pointer draft <https://json-schema.org/draft/2020-12/relative-json-pointer.html>`_ for
 the (draft) specification.
 """
